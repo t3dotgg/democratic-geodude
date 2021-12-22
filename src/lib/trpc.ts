@@ -4,13 +4,9 @@ import { createResource } from "solid-js";
 import type { inferHandlerInput, inferProcedureOutput } from "@trpc/server";
 import type { AppRouter } from "../../api/trpc/[trpc]";
 
-const client = createTRPCClient<AppRouter>({ url: "/api/trpc" });
+export const trpcClient = createTRPCClient<AppRouter>({ url: "/api/trpc" });
 
-const data = async () => {
-  return await client.query("hello");
-};
 type AppQueries = AppRouter["_def"]["queries"];
-
 type AppQueryKeys = keyof AppQueries & string;
 
 export const createTrpcQuery = <TPath extends AppQueryKeys>(
@@ -18,10 +14,23 @@ export const createTrpcQuery = <TPath extends AppQueryKeys>(
   ...args: inferHandlerInput<AppQueries[TPath]>
 ) => {
   const fetchData = async () => {
-    return client.query(path, ...(args as any));
+    return trpcClient.query(path, ...(args as any));
   };
 
   return createResource(fetchData);
+};
+
+type AppMutations = AppRouter["_def"]["mutations"];
+type AppMutationKeys = keyof AppMutations & string;
+
+export const createTrpcMutation = <TPath extends AppMutationKeys>(
+  path: TPath
+) => {
+  const fetchData = async (...args: inferHandlerInput<AppMutations[TPath]>) => {
+    return trpcClient.mutation(path, ...(args as any));
+  };
+
+  return { mutate: fetchData };
 };
 
 export type inferQueryResponse<

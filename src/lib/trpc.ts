@@ -1,7 +1,7 @@
 import { createTRPCClient } from "@trpc/client";
 import { createResource } from "solid-js";
 
-import type { inferHandlerInput } from "@trpc/server";
+import type { inferHandlerInput, inferProcedureOutput } from "@trpc/server";
 import type { AppRouter } from "../../api/trpc/[trpc]";
 
 const client = createTRPCClient<AppRouter>({ url: "/api/trpc" });
@@ -23,3 +23,7 @@ export const createTrpcQuery = <TPath extends AppQueryKeys>(
 
   return createResource(fetchData);
 };
+
+export type inferQueryResponse<
+  TRouteKey extends keyof AppRouter["_def"]["queries"]
+> = inferProcedureOutput<AppRouter["_def"]["queries"][TRouteKey]>;

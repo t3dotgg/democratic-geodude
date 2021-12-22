@@ -7,16 +7,19 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
+    "postinstall": "prisma generate",
     "vercel-dev-helper": "vite --port $PORT",
     "vdev": "vercel dev --local-config ./vercel-dev.json"
   },
   "license": "MIT",
   "devDependencies": {
+    "prisma": "^3.7.0",
     "typescript": "^4.5.3",
     "vite": "^2.7.1",
     "vite-plugin-solid": "^2.1.4"
   },
   "dependencies": {
+    "@prisma/client": "^3.7.0",
     "@trpc/client": "^9.16.0",
     "@trpc/next": "^9.16.0",
     "@trpc/server": "^9.16.0",

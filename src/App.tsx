@@ -4,9 +4,9 @@ import type { Component } from "solid-js";
 import { createTrpcQuery } from "./lib/trpc";
 
 const ComponentWithData: Component = () => {
-  const [data] = createTrpcQuery("hello", { text: "world" });
+  const [data] = createTrpcQuery("get-pokemon-pair");
 
-  return <h2>{data()?.greeting ?? "Loading..."}</h2>;
+  return <h2>{data()?.firstPokemon.id ?? "Loading..."}</h2>;
 };
 
 const App: Component = () => {

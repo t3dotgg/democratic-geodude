@@ -1,6 +1,4 @@
-import styles from "./App.module.css";
-
-import type { Component } from "solid-js";
+import { Component, Show } from "solid-js";
 import { createTrpcQuery, inferQueryResponse } from "./lib/trpc";
 
 const btn =
@@ -40,9 +38,10 @@ const PokemonListing = (props: {
 };
 
 const App: Component = () => {
-  const [data] = createTrpcQuery("get-pokemon-pair");
+  const [data, { refetch }] = createTrpcQuery("get-pokemon-pair");
 
   const voteForRoundest = (id: number) => {
+    refetch();
     return null;
   };
 
@@ -51,23 +50,27 @@ const App: Component = () => {
   return (
     <div class="h-screen w-screen flex flex-col justify-between items-center relative">
       <div class="text-2xl text-center pt-8">Which Pokémon is Rounder?</div>
-      {data() && (
-        <div class="p-8 flex justify-between items-center max-w-2xl flex-col md:flex-row animate-fade-in">
-          <PokemonListing
-            pokemon={data()!.firstPokemon}
-            vote={() => voteForRoundest(data()!.firstPokemon.id)}
-            disabled={fetchingNext}
-          />
-          <div class="p-8 italic text-xl">{"or"}</div>
-          <PokemonListing
-            pokemon={data()!.secondPokemon}
-            vote={() => voteForRoundest(data()!.secondPokemon.id)}
-            disabled={fetchingNext}
-          />
-          <div class="p-2" />
-        </div>
-      )}
-      {!data() && <img src="/rings.svg" class="w-48" />}
+      <Show
+        when={!data.loading && data()}
+        fallback={<img src="/rings.svg" class="w-48" />}
+      >
+        {(response) => (
+          <div class="p-8 flex justify-between items-center max-w-2xl flex-col md:flex-row animate-fade-in">
+            <PokemonListing
+              pokemon={response.firstPokemon}
+              vote={() => voteForRoundest(response.firstPokemon.id)}
+              disabled={fetchingNext}
+            />
+            <div class="p-8 italic text-xl">{"or"}</div>
+            <PokemonListing
+              pokemon={response.secondPokemon}
+              vote={() => voteForRoundest(response.secondPokemon.id)}
+              disabled={fetchingNext}
+            />
+            <div class="p-2" />
+          </div>
+        )}
+      </Show>
       <div class="w-full text-xl text-center pb-2">
         <a href="https://twitter.com/t3dotgg">Twitter</a>
         <span class="p-4">{"-"}</span>

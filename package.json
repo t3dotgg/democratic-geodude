@@ -1,0 +1,27 @@
+{
+  "name": "vite-template-solid",
+  "version": "0.0.0",
+  "description": "",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "vercel-dev-helper": "vite --port $PORT",
+    "vdev": "vercel dev --local-config ./vercel-dev.json"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^4.5.3",
+    "vite": "^2.7.1",
+    "vite-plugin-solid": "^2.1.4"
+  },
+  "dependencies": {
+    "@trpc/client": "^9.16.0",
+    "@trpc/next": "^9.16.0",
+    "@trpc/server": "^9.16.0",
+    "@vercel/node": "^1.12.1",
+    "solid-js": "^1.2.6",
+    "zod": "^3.11.6"
+  }
+}

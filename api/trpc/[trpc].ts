@@ -2,6 +2,7 @@ import * as trpc from "@trpc/server";
 import * as trpcNext from "@trpc/server/adapters/next";
 import { z } from "zod";
 import { PrismaClient } from "@prisma/client";
+import { inferAsyncReturnType } from "@trpc/server";
 
 const prisma = new PrismaClient();
 
@@ -23,20 +24,31 @@ export const getOptionsForVote = () => {
   return [firstId, secondId];
 };
 
-const appRouter = trpc
+type RouterContext = inferAsyncReturnType<typeof createContext>;
+
+const cachedRouter = trpc.router<RouterContext>().query("public-results", {
+  async resolve({ ctx }) {
+    return await prisma.pokemon.findMany({
+      orderBy: {
+        VoteFor: { _count: "desc" },
+      },
+      select: {
+        id: true,
+        name: true,
+        spriteUrl: true,
+        _count: {
+          select: {
+            VoteFor: true,
+            VoteAgainst: true,
+          },
+        },
+      },
+    });
+  },
+});
+
+const mainRouter = trpc
   .router()
-  .query("hello", {
-    input: z
-      .object({
-        text: z.string().nullish(),
-      })
-      .nullish(),
-    resolve({ input }) {
-      return {
-        greeting: `hello ${input?.text ?? "world"}`,
-      };
-    },
-  })
   .query("get-pokemon-pair", {
     async resolve() {
       const [first, second] = getOptionsForVote();
@@ -69,11 +81,37 @@ const appRouter = trpc
     },
   });
 
+const appRouter = trpc
+  .router<RouterContext>()
+  .merge(cachedRouter)
+  .merge(mainRouter);
+
 // export type definition of API
 export type AppRouter = typeof appRouter;
+
+const createContext = (opts: trpcNext.CreateNextContextOptions) => opts;
 
 // export API handler
 export default trpcNext.createNextApiHandler({
   router: appRouter,
-  createContext: () => null,
+  createContext: createContext as any,
+  responseMeta({ ctx, paths, type, errors }) {
+    // assuming you have all your public routes with the kewyord `public` in them
+    const allPublic = paths && paths.every((path) => path.includes("public"));
+    // checking that no procedures errored
+    const allOk = errors.length === 0;
+    // checking we're doing a query request
+    const isQuery = type === "query";
+
+    if (ctx?.res && allPublic && allOk && isQuery) {
+      // cache request for 5 minutes and check every min
+      const ONE_DAY_IN_SECONDS = 60 * 5;
+      return {
+        headers: {
+          "cache-control": `s-maxage=60, stale-while-revalidate=${ONE_DAY_IN_SECONDS}`,
+        },
+      };
+    }
+    return {};
+  },
 });

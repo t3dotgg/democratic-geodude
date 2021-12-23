@@ -69,14 +69,12 @@ const mainRouter = trpc
       votedAgainst: z.number(),
     }),
     async resolve({ input }) {
-      console.log("firing with input", input);
       const voteInDb = await prisma.vote.create({
         data: {
           votedAgainstId: input.votedAgainst,
           votedForId: input.votedFor,
         },
       });
-      console.log("result", voteInDb);
       return { success: true, vote: voteInDb };
     },
   });

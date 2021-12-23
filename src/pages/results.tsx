@@ -1,5 +1,5 @@
 import { Component, For, Show } from "solid-js";
-import { createTrpcQuery, inferQueryResponse } from "./lib/trpc";
+import { createTrpcQuery, inferQueryResponse } from "../lib/trpc";
 
 type PokemonQueryResult = inferQueryResponse<"public-results">;
 const generateCountPercent = (pokemon: PokemonQueryResult[number]) => {

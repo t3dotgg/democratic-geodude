@@ -1,4 +1,4 @@
-import { Component, Show } from "solid-js";
+import { Component, For, Show } from "solid-js";
 import { createTrpcQuery, inferQueryResponse } from "./lib/trpc";
 
 type PokemonQueryResult = inferQueryResponse<"public-results">;
@@ -35,8 +35,8 @@ const ResultsPage: Component = () => {
       >
         {(pokemon) => (
           <div class="flex flex-col w-full max-w-2xl border">
-            {pokemon
-              .sort((a, b) => {
+            <For
+              each={pokemon.sort((a, b) => {
                 const difference =
                   generateCountPercent(b) - generateCountPercent(a);
 
@@ -45,10 +45,10 @@ const ResultsPage: Component = () => {
                 }
 
                 return difference;
-              })
-              .map((currentPokemon) => {
-                return <PokemonListing pokemon={currentPokemon} />;
               })}
+            >
+              {(currentMon) => <PokemonListing pokemon={currentMon} />}
+            </For>
           </div>
         )}
       </Show>

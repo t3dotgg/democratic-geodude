@@ -41,7 +41,7 @@ const PokemonListing = (props: {
   );
 };
 
-export const VotePage: Component = () => {
+const VotePage: Component = () => {
   const [data, { refetch }] = createTrpcQuery("get-pokemon-pair");
 
   const { mutate } = createTrpcMutation("cast-vote");
@@ -91,3 +91,5 @@ export const VotePage: Component = () => {
     </>
   );
 };
+
+export default VotePage;

@@ -1,16 +1,25 @@
 import { Component } from "solid-js";
-import { VotePage } from "./vote-page";
+
+import { lazy } from "solid-js";
+import { Routes, Route, Link } from "solid-app-router";
+
+const VotePage = lazy(() => import("./vote-page"));
+const ResultsPage = lazy(() => import("./results-page"));
 
 const App: Component = () => {
   return (
     <div class="h-screen w-screen flex flex-col justify-between items-center relative">
-      <VotePage />
+      <Routes>
+        <Route path="/results" element={<ResultsPage />} />
+        <Route path="/" element={<VotePage />} />
+        {/* <Route path="/*all" element={<NotFound />} /> */}
+      </Routes>
       <div class="w-full text-xl text-center pb-2">
-        <a href="https://twitter.com/t3dotgg">Twitter</a>
+        <Link href="https://twitter.com/t3dotgg">Twitter</Link>
         <span class="p-4">{"-"}</span>
-        <a href="/results">Results</a>
+        <Link href="/results">Results</Link>
         <span class="p-4">{"-"}</span>
-        <a href="/about">About</a>
+        <Link href="/about">About</Link>
       </div>
     </div>
   );

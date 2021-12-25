@@ -102,11 +102,11 @@ export default trpcNext.createNextApiHandler({
     const isQuery = type === "query";
 
     if (ctx?.res && allPublic && allOk && isQuery) {
-      // cache request for 5 minutes and check every min
-      const FIVE_MINUTES_IN_SECONDS = 60 * 5;
+      // cache request for 1 day
+      const DAY_IN_SECONDS = 60 * 60 * 24;
       return {
         headers: {
-          "cache-control": `s-maxage=60, stale-while-revalidate=${FIVE_MINUTES_IN_SECONDS}`,
+          "cache-control": `s-maxage=${DAY_IN_SECONDS}, stale-while-revalidate=${DAY_IN_SECONDS}`,
         },
       };
     }

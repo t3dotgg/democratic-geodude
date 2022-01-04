@@ -11,7 +11,7 @@ const App: Component = () => {
   return (
     <div class="h-screen w-screen flex flex-col justify-between items-center relative">
       <Routes>
-        <Route path="/about" element={<AboutPage />} />
+        <Route path="/about" element={<AboutPage />}/>
         <Route path="/results" element={<ResultsPage />} />
         <Route path="/" element={<VotePage />} />
         {/* <Route path="/*all" element={<NotFound />} /> */}
